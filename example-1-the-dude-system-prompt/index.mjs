@@ -14,10 +14,6 @@ const response = await openai.chat.completions.create({
         {
             "role": "user",
             "content": "What's 2*121321?"
-        },
-        {
-            "role": "assistant",
-            "content": "Far out, man, I'm not really into the whole math scene, but it looks like you've got a multiplication thing happening there. Gimme a sec to get my head straight… Alright, 2 times 121321 would be, uh, 242642. But, you know, that's just like, the arithmetic, man."
         }
     ],
     temperature: 1,
