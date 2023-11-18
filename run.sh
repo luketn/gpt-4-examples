@@ -15,7 +15,28 @@ if ! command -v node &> /dev/null; then
 fi
 node -e 'const [major] = process.version.slice(1).split("."); if (parseInt(major) < 14) { console.error("Node.js version is less than 14. Exiting."); process.exit(1); }'
 
-# run the first example
-cd example-1-the-dude-system-prompt
-npm install
-npm test
+# List example directories
+directories=$(find . -maxdepth 1 -type d -name "example-*")
+
+# Check if any directories were found
+if [ -z "$directories" ]; then
+    echo "No example directories found."
+    exit 1
+fi
+
+# Loop through each directory
+for dir in $directories; do
+    echo "Running example $dir..."
+
+    # Change to directory
+    cd "$dir"
+
+    # Run the example
+    npm install
+    npm test
+
+    # Return to the original directory
+    cd ..
+done
+
+echo "Completed all examples."
