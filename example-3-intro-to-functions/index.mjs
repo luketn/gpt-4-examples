@@ -17,9 +17,10 @@ let messages = [
 
 const max_messages = 5;
 while(messages.length < max_messages) {
-    console.log(`${messages[messages.length-1].role}: ${messages[messages.length-1].content}`);
+    let current_message = messages[messages.length-1];
+    console.log(`${current_message.role}: ${current_message.content}`);
 
-    const response = await openai.chat.completions.create({
+    const raw_response = await openai.chat.completions.create({
         model: "gpt-4-1106-preview",
         functions: [{
             name: "generate_random_number",
@@ -37,10 +38,11 @@ while(messages.length < max_messages) {
         presence_penalty: 0,
     });
 
-    if (response.choices) {
-        messages.push(response.choices[0].message);
-        if (response.choices[0].finish_reason === "function_call") {
-            const function_name = response.choices[0].message.function_call.name;
+    if (raw_response.choices && raw_response.choices.length > 0) {
+        let response = raw_response.choices[0];
+        messages.push(response.message);
+        if (response.finish_reason === "function_call") {
+            const function_name = response.message.function_call.name;
             console.log(`assistant: Call function ${function_name}()`)
             switch(function_name) {
                 case "generate_random_number": {
@@ -53,11 +55,9 @@ while(messages.length < max_messages) {
                     });
                 }
             }
-        } else if (response.choices[0].finish_reason === "stop") {
-            console.log(`assistant: ${response.choices[0].message.content}`)
+        } else if (response.finish_reason === "stop") {
+            console.log(`${response.message.role}: ${response.message.content}`)
             break;
         }
     }
 }
-
-console.log(JSON.stringify(messages, null, 2));

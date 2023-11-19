@@ -32,11 +32,12 @@ for dir in $directories; do
     cd "$dir"
 
     # Run the example
-    npm install
-    npm test
+    npm install --silent > /dev/null
+    npm test --silent
 
     # Return to the original directory
     cd ..
+    echo ""
 done
 
 echo "Completed all examples."
