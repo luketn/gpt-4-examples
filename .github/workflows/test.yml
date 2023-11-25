@@ -34,4 +34,5 @@ jobs:
       - name: Node Run Tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DEBUG_REQUESTS: 'true'
         run: npm test
