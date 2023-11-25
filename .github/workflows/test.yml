@@ -27,8 +27,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.version }}
-          cache: 'npm'
-          cache-dependency-path: '${{ matrix.example }}/package-lock.json'
 
       - name: Node Install Dependencies
         run: npm ci
