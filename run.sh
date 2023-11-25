@@ -2,6 +2,9 @@
 
 set -e
 
+# If you want to print out the full JSON of the request and response to the OpenAI API, uncomment below:
+#export DEBUG_REQUESTS=true
+
 # Check if OPENAI_API_KEY is not set
 if [ -z "$OPENAI_API_KEY" ]; then
     echo "Environment variable OPENAI_API_KEY is not set. Please find your OpenAI API key and set it as an environment variable so that the examples can use it. e.g. export OPENAI_API_KEY=\"sk-my-key\"."

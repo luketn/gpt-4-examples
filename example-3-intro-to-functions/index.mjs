@@ -1,5 +1,6 @@
 import {OpenAI} from "openai";
 
+const debug = process.env.DEBUG_REQUESTS; const debugLog = (data) => {if (debug) {console.log(JSON.stringify(data, null, 2));}}
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -15,12 +16,12 @@ let messages = [
     }
 ];
 
-const max_messages = 5;
+const max_messages = 7;
 while(messages.length < max_messages) {
     let current_message = messages[messages.length-1];
     console.log(`${current_message.role}: ${current_message.content}`);
 
-    const raw_response = await openai.chat.completions.create({
+    let request = {
         model: "gpt-4-1106-preview",
         functions: [{
             name: "generate_random_number",
@@ -36,13 +37,16 @@ while(messages.length < max_messages) {
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
-    });
+    };
+    debugLog(request);
+    const response = await openai.chat.completions.create(request);
+    debugLog(response);
 
-    if (raw_response.choices && raw_response.choices.length > 0) {
-        let response = raw_response.choices[0];
-        messages.push(response.message);
-        if (response.finish_reason === "function_call") {
-            const function_name = response.message.function_call.name;
+    let conversationFinished = false;
+    for (const {message, finish_reason} of response.choices) {
+        messages.push(message);
+        if (finish_reason === "function_call") {
+            const function_name = message.function_call.name;
             console.log(`assistant: Call function ${function_name}()`)
             switch(function_name) {
                 case "generate_random_number": {
@@ -55,9 +59,13 @@ while(messages.length < max_messages) {
                     });
                 }
             }
-        } else if (response.finish_reason === "stop") {
-            console.log(`${response.message.role}: ${response.message.content}`)
+        } else if (finish_reason === "stop") {
+            console.log(`${message.role}: ${message.content}`);
+            conversationFinished = true;
             break;
         }
+    }
+    if (conversationFinished) {
+        break;
     }
 }

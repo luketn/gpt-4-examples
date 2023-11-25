@@ -1,0 +1,37 @@
+name: Test Examples
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test-examples:
+    strategy:
+      matrix:
+        version: [ 14, 16, 18, 20 ]
+        example:
+          - 'example-1-the-dude-system-prompt'
+          - 'example-2-the-dude-few-shot'
+          - 'example-3-intro-to-functions'
+#TODO          - 'example-4...'
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.example }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version }}
+          cache: 'npm'
+          cache-dependency-path: '${{ matrix.example }}/package-lock.json'
+
+      - name: Node Install Dependencies
+        run: npm ci
+
+      - name: Node Run Tests
+        run: npm test
